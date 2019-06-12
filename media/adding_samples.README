@@ -1,0 +1,4 @@
+ffmpeg -i in.xx -c:a pcm_s16le -ar 44100 -ac 2 out.wav
+
+or batch
+mkdir /tmp/newmedia; for f in $(find ./ -type f ); do ffmpeg -v error -i "$f" -f wav -c:a pcm_s16le -ar 44100 -ac 2 -y /tmp/newmedia/$(basename $f); done
