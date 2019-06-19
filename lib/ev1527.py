@@ -19,15 +19,8 @@ class Ev1527_receiver:
 		self.receiver_pin = receiver_pin_v
 		self.pi.set_glitch_filter(self.receiver_pin, 200) 
 		receiver_edgeChangeCallBack_handle = self.pi.callback(self.receiver_pin, pigpio.EITHER_EDGE, self.receiver_edgeChangeCallBack)
-		self.callbacks = []
-		# set to 1 when receive a valid length pulse
-		self.pir_listener_got_start_pulse = 0
-		# set to ticks on end & start of start pulse
-		self.pir_listener_start_pulse_starttime = 0
-		self.pir_listener_start_pulse_endtime = 0
-		# record state changes in this array 
-		self.waveform_record = []
-	
+
+	callbacks = []
 	def add_callback( self, callback_handle ) :
 		self.callbacks.append( callback_handle )
 	
@@ -70,6 +63,13 @@ class Ev1527_receiver:
 		self.debugs_endDataTime = lastTime - wavearray[0][0]
 		return bits
 
+	# set to 1 when receive a valid length pulse
+	pir_listener_got_start_pulse = 0
+	# set to ticks on end & start of start pulse
+	pir_listener_start_pulse_starttime = 0
+	pir_listener_start_pulse_endtime = 0
+	# record state changes in this array 
+	waveform_record = []
 	def receiver_edgeChangeCallBack(self, gpio, level, tick) :
 		# record start of starting pulse
 		if self.pir_listener_got_start_pulse == 0 and level == 0 :

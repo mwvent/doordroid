@@ -1,4 +1,5 @@
 import ctypes
+import atexit
 
 class struct_pa_sample_spec(ctypes.Structure):
     __slots__ = [
@@ -45,7 +46,18 @@ class PulseAudioStream :
             None,  # Default buffering attributes.
             ctypes.byref(error)  # Ignore error code.
         )
+        atexit.register(self.cleanup)
         if not self.pulsePlayBackStream:
             raise Exception('Could not create pulse audio stream: {0}!'.format(
                 self.pulseConnection.strerror(ctypes.byref(error))))
+
+    def cleanup(self):
+        print("Called cleanup for pulseConnection")
+        error = ctypes.c_int(0)
+        self.pulseConnection.pa_simple_drain( self.pulsePlayBackStream, error)
+        self.pulseConnection.pa_simple_free( self.pulsePlayBackStream )
+
+    def __del__(self):
+        self.cleanup()
+
                 

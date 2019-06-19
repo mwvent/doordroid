@@ -13,6 +13,7 @@ class EventHandler :
         self.ignoreNextTriggers = 0
         self.trigger_function_lock = 0
         self.last_trigger_time = datetime.datetime.now()
+        self.last_trigger_time = datetime.datetime.now() - datetime.timedelta(hours=1)
         self.callbacks = []
         self.noRateLimit_callbacks = []
         self.introCalled = 0
@@ -26,7 +27,7 @@ class EventHandler :
     def trigger(self, *args) :
         # prevent concurrent execution of function
         if self.trigger_function_lock == 1:
-            logger.log( self.name + " trigger ignored - function locked" )
+            #logger.log( self.name + " trigger ignored - function locked" )
             return
         # the main thread can set an ignore count - used if an unwanted edge detect fires at startup
         if self.ignoreNextTriggers > 0 :
@@ -47,7 +48,7 @@ class EventHandler :
             last_trigger_timeDiff =  datetime.datetime.now() - self.last_trigger_time
             self.last_trigger_time = datetime.datetime.now()
             if last_trigger_timeDiff.seconds < self.repeatRateLimiterSeconds:
-                logger.log( self.name + " trigger ignored - rate limiter" )
+                #logger.log( self.name + " trigger ignored - rate limiter" )
                 return
             # passed - execute callback functions
             logger.log( self.name + " triggered" )
