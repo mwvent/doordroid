@@ -6,6 +6,7 @@ from lib import soundCollectionPlayer
 from lib import zoneMinderTrigger
 from lib import serialLineReader
 from lib import logger
+from lib import hooks
 import time
 import pigpio
 
@@ -22,12 +23,13 @@ pi.set_glitch_filter(doorbell_pin, 20001)
 receiver_edgeChangeCallBack_handle = pi.callback(doorbell_pin, pigpio.EITHER_EDGE, doorbell_eventHandler.trigger)
 doorbell_eventHandler.add_callback( doorbell_sounds.playRandomSound, [] )
 doorbell_eventHandler.add_callback( zoneMinderTrigger.send, ["7", "doorbell"] )
-
+doorbell_eventHandler.add_callback( hooks.callHooks, ["doorbell"] )
 
 pir_greeting_sounds = soundCollectionPlayer.SoundCollectionPlayer( "/opt/doordroid2/media/pir_in" )
 pir_goodbye_sounds = soundCollectionPlayer.SoundCollectionPlayer( "/opt/doordroid2/media/pir_out" )
 pir_eventHandler = eventHandler.EventHandler ( "PIR", 40 )
 pir_eventHandler.add_callback ( pir_greeting_sounds.playRandomSound, [] )
+pir_eventHandler.add_callback( hooks.callHooks, ["pir_in"] )
 pir_eventHandler.add_noRateLimit_callback ( zoneMinderTrigger.send, ["7", "pir"] )
 
 rx = serialLineReader.SerialLineReader( "/dev/arduino", 115200 )
